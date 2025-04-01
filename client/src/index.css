@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+/* Progress bar animation */
+@keyframes fill {
+  0% { width: 0; }
+  100% { width: var(--percent); }
+}
+
+.progress-fill {
+  animation: fill 1s ease-out forwards;
+}
+
+/* Tooltip styles */
+.tooltip {
+  @apply relative inline-block;
+}
+
+.tooltip .tooltip-text {
+  @apply invisible absolute z-10 w-48 rounded-md bg-neutral-700 p-2 text-center text-sm text-white opacity-0 transition-opacity duration-300;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -24px;
+}
+
+.tooltip:hover .tooltip-text {
+  @apply visible opacity-100;
+}
+
+/* Hover scale effect */
+.hover-scale {
+  transition: transform 0.15s ease-in-out;
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+/* Expense item striping */
+.expense-item:nth-child(odd) {
+  @apply bg-neutral-50;
+}
