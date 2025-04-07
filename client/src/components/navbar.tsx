@@ -29,7 +29,7 @@ const Navbar = ({ openExpenseModal }: NavbarProps) => {
           <span className='material-icons text-primary-500'>
             account_balance
           </span>
-          <h1 className='text-xl font-semibold text-primary-600'>FiRise</h1>
+          <h1 className='text-xl font-semibold text-primary-600'>FiRise - Building Financial Freedom</h1>
         </div>
 
         <button
