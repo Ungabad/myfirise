@@ -7,4 +7,11 @@
     },
     { "src": "/.*", "dest": "/index.html" }
   ]
+  "redirects": [
+    {
+      "source": "/:path*",
+      "destination": "https://fi-rise.vercel.app/:path*",
+      "permanent": true
+    }
+  ]
 }
