@@ -26,10 +26,15 @@ const Navbar = ({ openExpenseModal }: NavbarProps) => {
     <header className='sticky top-0 z-10 border-b border-neutral-100 bg-white shadow-sm'>
       <div className='mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8'>
         <div className='flex items-center space-x-2'>
-          <span className='material-icons text-primary-500'>
-            account_balance
-          </span>
-          <h1 className='text-xl font-semibold text-primary-600'>FiRise - Building Financial Freedom</h1>
+          <img
+            src='/MyFiRise-logo.png'
+            alt='FiRise Logo'
+            className='h-7 w-7 rounded'
+            style={{ objectFit: "cover" }}
+          />
+          <h1 className='text-xl font-semibold text-primary-600'>
+            MyFiRise - Building Financial Freedom
+          </h1>
         </div>
 
         <button
