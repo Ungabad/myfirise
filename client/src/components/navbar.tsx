@@ -27,8 +27,8 @@ const Navbar = ({ openExpenseModal }: NavbarProps) => {
       <div className='mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8'>
         <div className='flex items-center space-x-2'>
           <img
-            src='/MyFiRise-logo.png'
-            alt='FiRise Logo'
+            src='/myfirise-logo.png'
+            alt='MyFiRise Logo'
             className='h-7 w-7 rounded'
             style={{ objectFit: "cover" }}
           />
