@@ -1,8 +1,5 @@
 {
   "version": 2,
-  "build": {
-    "outDir": "dist"
-  },
   "routes": [
     {
       "src": "/assets/.*",
