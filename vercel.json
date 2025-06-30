@@ -1,10 +1,10 @@
 {
   "version": 2,
+  "builds": [{ "src": "client/next.config.js", "use": "@vercel/next" }],
   "routes": [
     {
-      "src": "/assets/.*",
-      "headers": { "Cache-Control": "public, max-age=31536000, immutable" }
-    },
-    { "src": "/.*", "dest": "/index.html" }
+      "src": "/(.*)",
+      "dest": "client/$1"
+    }
   ]
 }
