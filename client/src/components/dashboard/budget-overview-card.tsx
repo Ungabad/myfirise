@@ -1,5 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
 import { useQuery } from "@tanstack/react-query";
 import { Budget, Expense } from "@shared/schema";
@@ -31,7 +36,7 @@ const BudgetOverviewCard = () => {
     queryKey: [`/api/budgets?month=${month}&year=${year}`],
   });
 
-  const { data: categories } = useQuery({
+  const { data: categories } = useQuery<any[]>({
     queryKey: ["/api/categories"],
   });
 
@@ -42,9 +47,12 @@ const BudgetOverviewCard = () => {
   useEffect(() => {
     if (budgets && categories && expenses) {
       // Filter expenses for current month
-      const currentMonthExpenses = expenses.filter(expense => {
+      const currentMonthExpenses = expenses.filter((expense) => {
         const expenseDate = new Date(expense.date);
-        return expenseDate.getMonth() + 1 === month && expenseDate.getFullYear() === year;
+        return (
+          expenseDate.getMonth() + 1 === month &&
+          expenseDate.getFullYear() === year
+        );
       });
 
       // Calculate spent by category
@@ -55,30 +63,39 @@ const BudgetOverviewCard = () => {
       }, {} as Record<number, number>);
 
       // Create category budgets with spending info
-      const categoryBudgetData = budgets.map(budget => {
-        const category = categories.find(c => c.id === budget.categoryId);
+      const categoryBudgetData = budgets.map((budget) => {
+        const category = Array.isArray(categories)
+          ? categories.find((c: any) => c.id === budget.categoryId)
+          : undefined;
         const spent = spentByCategory[budget.categoryId] || 0;
         const budgetAmount = Number(budget.amount);
-        
         return {
           id: budget.categoryId,
-          name: category?.name || 'Unknown',
-          icon: category?.icon || 'help_outline',
+          name: category?.name || "Unknown",
+          icon: category?.icon || "help_outline",
           budget: budgetAmount,
           spent,
-          percentage: calculatePercentage(spent, budgetAmount)
+          percentage: calculatePercentage(spent, budgetAmount),
         };
       });
 
       setCategoryBudgets(categoryBudgetData);
 
       // Calculate totals
-      const totalBudgetAmount = budgets.reduce((sum, budget) => sum + Number(budget.amount), 0);
-      const totalSpentAmount = Object.values(spentByCategory).reduce((sum, amt) => sum + amt, 0);
-      
+      const totalBudgetAmount = budgets.reduce(
+        (sum, budget) => sum + Number(budget.amount),
+        0
+      );
+      const totalSpentAmount = Object.values(spentByCategory).reduce(
+        (sum, amt) => sum + amt,
+        0
+      );
+
       setTotalBudget(totalBudgetAmount);
       setTotalSpent(totalSpentAmount);
-      setTotalPercentage(calculatePercentage(totalSpentAmount, totalBudgetAmount));
+      setTotalPercentage(
+        calculatePercentage(totalSpentAmount, totalBudgetAmount)
+      );
     }
   }, [budgets, categories, expenses, month, year]);
 
@@ -89,67 +106,86 @@ const BudgetOverviewCard = () => {
   };
 
   return (
-    <Card className="col-span-1 lg:col-span-2">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-lg font-medium text-neutral-800">Monthly Budget Overview</CardTitle>
+    <Card className='col-span-1 lg:col-span-2'>
+      <CardHeader className='flex flex-row items-center justify-between pb-2'>
+        <CardTitle className='text-lg font-medium text-neutral-800'>
+          Monthly Budget Overview
+        </CardTitle>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <span className="material-icons text-neutral-400">info</span>
+              <span className='material-icons text-neutral-400'>info</span>
             </TooltipTrigger>
             <TooltipContent>
-              <p className="w-48 text-center text-sm">Your budget shows your spending for this month compared to your planned budget</p>
+              <p className='w-48 text-center text-sm'>
+                Your budget shows your spending for this month compared to your
+                planned budget
+              </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </CardHeader>
-      
+
       <CardContent>
-        <div className="mt-2 space-y-4">
+        <div className='mt-2 space-y-4'>
           {/* Total Budget */}
           <div>
-            <div className="mb-1 flex items-center justify-between">
-              <div className="flex items-center">
-                <span className="text-sm font-medium text-neutral-700">Total Budget</span>
+            <div className='mb-1 flex items-center justify-between'>
+              <div className='flex items-center'>
+                <span className='text-sm font-medium text-neutral-700'>
+                  Total Budget
+                </span>
               </div>
-              <div className="text-right">
-                <span className="text-sm font-medium text-neutral-700">
-                  {formatCurrency(totalSpent)} spent of {formatCurrency(totalBudget)}
+              <div className='text-right'>
+                <span className='text-sm font-medium text-neutral-700'>
+                  {formatCurrency(totalSpent)} spent of{" "}
+                  {formatCurrency(totalBudget)}
                 </span>
               </div>
             </div>
-            <Progress 
-              value={totalPercentage} 
-              className="h-3"
+            <Progress
+              value={totalPercentage}
+              className='h-3'
               indicatorClass={getProgressColorClass(totalPercentage)}
             />
           </div>
-          
+
           {/* Category Budgets */}
           {categoryBudgets.map((item) => (
             <div key={item.id}>
-              <div className="mb-1 flex items-center justify-between">
-                <div className="flex items-center">
-                  <span className="material-icons mr-2 text-sm text-neutral-500">{item.icon}</span>
-                  <span className="text-sm font-medium text-neutral-700">{item.name}</span>
+              <div className='mb-1 flex items-center justify-between'>
+                <div className='flex items-center'>
+                  <span className='material-icons mr-2 text-sm text-neutral-500'>
+                    {item.icon}
+                  </span>
+                  <span className='text-sm font-medium text-neutral-700'>
+                    {item.name}
+                  </span>
                 </div>
-                <div className="text-right">
-                  <span className="text-sm font-medium text-neutral-700">
-                    {formatCurrency(item.spent)} of {formatCurrency(item.budget)}
+                <div className='text-right'>
+                  <span className='text-sm font-medium text-neutral-700'>
+                    {formatCurrency(item.spent)} of{" "}
+                    {formatCurrency(item.budget)}
                   </span>
                 </div>
               </div>
-              <Progress 
-                value={item.percentage} 
-                className="h-2"
+              <Progress
+                value={item.percentage}
+                className='h-2'
                 indicatorClass={getProgressColorClass(item.percentage)}
               />
             </div>
           ))}
         </div>
-        
-        <Link href="/expenses" className="mt-6 inline-block text-sm font-medium text-primary-600 hover:text-primary-700">
-          View detailed budget <span className="material-icons align-text-bottom text-sm">chevron_right</span>
+
+        <Link
+          href='/expenses'
+          className='mt-6 inline-block text-sm font-medium text-primary-600 hover:text-primary-700'
+        >
+          View detailed budget{" "}
+          <span className='material-icons align-text-bottom text-sm'>
+            chevron_right
+          </span>
         </Link>
       </CardContent>
     </Card>

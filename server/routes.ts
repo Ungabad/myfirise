@@ -2,7 +2,11 @@ import express, { type Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
-import { insertExpenseSchema, insertGoalSchema, insertBudgetSchema } from "@shared/schema";
+import {
+  insertExpenseSchema,
+  insertGoalSchema,
+  insertBudgetSchema,
+} from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 
@@ -27,7 +31,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      
+
       const { password, ...userWithoutPassword } = user;
       res.json(userWithoutPassword);
     } catch (err) {
@@ -80,7 +84,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // For demo purposes, use the first user
       const userId = 1;
       req.body.userId = userId;
-      
+
       const validatedData = insertExpenseSchema.parse(req.body);
       const expense = await storage.createExpense(validatedData);
       res.status(201).json(expense);
@@ -93,13 +97,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = Number(req.params.id);
       const userId = 1; // For demo purposes
-      
+
       // Ensure the expense exists and belongs to the user
       const existingExpense = await storage.getExpense(id);
       if (!existingExpense || existingExpense.userId !== userId) {
         return res.status(404).json({ message: "Expense not found" });
       }
-      
+
       const updatedExpense = await storage.updateExpense(id, req.body);
       res.json(updatedExpense);
     } catch (err) {
@@ -112,13 +116,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = Number(req.params.id);
       const userId = 1; // For demo purposes
-      
+
       // Ensure the expense exists and belongs to the user
       const existingExpense = await storage.getExpense(id);
       if (!existingExpense || existingExpense.userId !== userId) {
         return res.status(404).json({ message: "Expense not found" });
       }
-      
+
       const result = await storage.deleteExpense(id);
       if (result) {
         res.status(204).end();
@@ -149,7 +153,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // For demo purposes, use the first user
       const userId = 1;
       req.body.userId = userId;
-      
+
       const validatedData = insertGoalSchema.parse(req.body);
       const goal = await storage.createGoal(validatedData);
       res.status(201).json(goal);
@@ -162,13 +166,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = Number(req.params.id);
       const userId = 1; // For demo purposes
-      
+
       // Ensure the goal exists and belongs to the user
       const existingGoal = await storage.getGoal(id);
       if (!existingGoal || existingGoal.userId !== userId) {
         return res.status(404).json({ message: "Goal not found" });
       }
-      
+
       const updatedGoal = await storage.updateGoal(id, req.body);
       res.json(updatedGoal);
     } catch (err) {
@@ -181,13 +185,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = Number(req.params.id);
       const userId = 1; // For demo purposes
-      
+
       // Ensure the goal exists and belongs to the user
       const existingGoal = await storage.getGoal(id);
       if (!existingGoal || existingGoal.userId !== userId) {
         return res.status(404).json({ message: "Goal not found" });
       }
-      
+
       const result = await storage.deleteGoal(id);
       if (result) {
         res.status(204).end();
@@ -205,12 +209,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // For demo purposes, use the first user
       const userId = 1;
-      
+
       // Default to current month if not specified
       const date = new Date();
-      const month = req.query.month ? Number(req.query.month) : date.getMonth() + 1;
+      const month = req.query.month
+        ? Number(req.query.month)
+        : date.getMonth() + 1;
       const year = req.query.year ? Number(req.query.year) : date.getFullYear();
-      
+
       const budgets = await storage.getBudgets(userId, month, year);
       res.json(budgets);
     } catch (err) {
@@ -224,9 +230,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // For demo purposes, use the first user
       const userId = 1;
       req.body.userId = userId;
-      
+
       const validatedData = insertBudgetSchema.parse(req.body);
-      
+
       // Check if budget already exists for this category, month, and year
       const existingBudget = await storage.getBudgetByCategory(
         userId,
@@ -234,15 +240,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         validatedData.month,
         validatedData.year
       );
-      
+
       if (existingBudget) {
         // Update existing budget
         const updatedBudget = await storage.updateBudget(existingBudget.id, {
-          amount: validatedData.amount
+          amount: validatedData.amount,
         });
         return res.json(updatedBudget);
       }
-      
+
       // Create new budget
       const budget = await storage.createBudget(validatedData);
       res.status(201).json(budget);
@@ -266,11 +272,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = Number(req.params.id);
       const updatedResource = await storage.toggleResourceBookmark(id);
-      
+
       if (!updatedResource) {
         return res.status(404).json({ message: "Resource not found" });
       }
-      
+
       res.json(updatedResource);
     } catch (err) {
       console.error(err);
@@ -291,13 +297,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   router.get("/articles/:id", async (req, res) => {
     try {
-      const id = Number(req.params.id);
+      const id = req.params.id;
       const article = await storage.getArticle(id);
-      
       if (!article) {
         return res.status(404).json({ message: "Article not found" });
       }
-      
       res.json(article);
     } catch (err) {
       console.error(err);

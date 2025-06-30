@@ -36,7 +36,12 @@ app.use((req, res, next) => {
   next();
 });
 
+import { seedMongoArticlesIfEmpty } from "./storage";
+
 (async () => {
+  // Seed MongoDB with articles if empty (safe to call every startup)
+  await seedMongoArticlesIfEmpty();
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -60,11 +65,14 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
+  server.listen(
+    {
+      port,
+      host: "0.0.0.0",
+      reusePort: true,
+    },
+    () => {
+      log(`serving on port ${port}`);
+    }
+  );
 })();

@@ -1,3 +1,40 @@
+// MongoDB seeding for articles
+export async function seedMongoArticlesIfEmpty() {
+  const db = await connectToMongo();
+  const count = await db.collection("articles").countDocuments();
+  if (count === 0) {
+    // Example articles, you can expand or import from elsewhere
+    const initialArticles = [
+      {
+        title: "Budgeting Basics",
+        description: "Learn how to create and manage a budget.",
+        content: "<p>Budgeting is the foundation of financial health...</p>",
+        imageUrl:
+          "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=500&q=80",
+        category: "budgeting",
+      },
+      {
+        title: "Understanding Credit Scores",
+        description: "What is a credit score and why does it matter?",
+        content: "<p>Your credit score affects your ability to borrow...</p>",
+        imageUrl:
+          "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=500&q=80",
+        category: "credit",
+      },
+      {
+        title: "Saving Strategies",
+        description: "Tips and tricks to help you save more.",
+        content: "<p>Saving money is key to reaching your goals...</p>",
+        imageUrl:
+          "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=500&q=80",
+        category: "saving",
+      },
+      // Add more articles as needed
+    ];
+    await db.collection("articles").insertMany(initialArticles);
+    console.log("Seeded MongoDB with initial articles.");
+  }
+}
 import {
   users,
   type User,
@@ -21,6 +58,8 @@ import {
   type Article,
   type InsertArticle,
 } from "@shared/schema";
+import { connectToMongo } from "./mongo";
+import { ObjectId } from "mongodb";
 
 // Storage interface
 export interface IStorage {
@@ -36,6 +75,7 @@ export interface IStorage {
 
   // Expense methods
   getExpenses(userId: number): Promise<Expense[]>;
+  getExpense(id: number): Promise<Expense | undefined>;
   getRecentExpenses(userId: number, limit: number): Promise<Expense[]>;
   createExpense(expense: InsertExpense): Promise<Expense>;
   updateExpense(
@@ -73,7 +113,7 @@ export interface IStorage {
 
   // Article methods
   getArticles(): Promise<Article[]>;
-  getArticle(id: number): Promise<Article | undefined>;
+  getArticle(id: string): Promise<Article | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -169,6 +209,10 @@ export class MemStorage implements IStorage {
     return Array.from(this.expenses.values())
       .filter((expense) => expense.userId === userId)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }
+
+  async getExpense(id: number): Promise<Expense | undefined> {
+    return this.expenses.get(id);
   }
 
   async getRecentExpenses(userId: number, limit: number): Promise<Expense[]> {
@@ -325,12 +369,41 @@ export class MemStorage implements IStorage {
   }
 
   // Article methods
-  async getArticles(): Promise<Article[]> {
-    return Array.from(this.articles.values());
+
+  // Helper to map MongoDB _id to id (string) and remove _id
+  private mapMongoArticle(doc: any): Article {
+    // Map _id to id (string), remove _id, and ensure all fields exist
+    const { _id, ...rest } = doc;
+    return {
+      ...rest,
+      id: _id?.toString?.() ?? "",
+    } as Article;
   }
 
-  async getArticle(id: number): Promise<Article | undefined> {
-    return this.articles.get(id);
+  async getArticles(): Promise<Article[]> {
+    const db = await connectToMongo();
+    const docs = await db.collection("articles").find().toArray();
+    return docs.map(this.mapMongoArticle);
+  }
+
+  async getArticle(id: string): Promise<Article | undefined> {
+    const db = await connectToMongo();
+    let doc;
+    try {
+      doc = await db.collection("articles").findOne({ _id: new ObjectId(id) });
+    } catch {
+      return undefined;
+    }
+    return doc ? this.mapMongoArticle(doc) : undefined;
+  }
+
+  async createArticle(article: InsertArticle): Promise<Article> {
+    const db = await connectToMongo();
+    const result = await db.collection("articles").insertOne(article);
+    const doc = await db
+      .collection("articles")
+      .findOne({ _id: result.insertedId });
+    return this.mapMongoArticle(doc);
   }
 
   // Seed initial data
