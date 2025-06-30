@@ -6,10 +6,8 @@ const Footer = () => {
       <div className='mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8'>
         <div className='md:flex md:items-center md:justify-between'>
           <div className='mb-6 flex items-center space-x-2 md:mb-0'>
-            <span className='material-icons text-primary-500'>
-              account_balance
-            </span>
-            <h2 className='text-lg font-semibold text-primary-600'>FiRise</h2>
+            <img src="/myfirise-logo.png" alt="MyFiRise Logo" className="h-8 w-8" />
+            <h2 className='text-lg font-semibold text-primary-600'>MyFiRise</h2>
           </div>
 
           <div className='flex flex-wrap justify-center space-x-6 md:justify-end'>
