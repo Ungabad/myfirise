@@ -68,8 +68,8 @@ import { seedMongoArticlesIfEmpty } from "./storage";
   server.listen(
     {
       port,
-      host: "0.0.0.0",
-      reusePort: true,
+      host: "127.0.0.1",
+      // reusePort: true,
     },
     () => {
       log(`serving on port ${port}`);
