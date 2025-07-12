@@ -3,12 +3,20 @@ export async function seedMongoArticlesIfEmpty() {
   const db = await connectToMongo();
   const count = await db.collection("articles").countDocuments();
   if (count === 0) {
-    // Example articles, you can expand or import from elsewhere
     const initialArticles = [
       {
         title: "Budgeting Basics",
         description: "Learn how to create and manage a budget.",
-        content: "<p>Budgeting is the foundation of financial health...</p>",
+        content: `<h1>Budgeting Basics</h1>
+          <p>Budgeting is the foundation of financial health. A budget helps you track income and expenses, make informed spending decisions, and reach your financial goals.</p>
+          <h2>Creating a Budget</h2>
+          <ol>
+            <li>Track your income</li>
+            <li>List all expenses</li>
+            <li>Set spending limits</li>
+            <li>Monitor and adjust</li>
+          </ol>
+          <p>Start with basic expense tracking and build from there. The key is consistency!</p>`,
         imageUrl:
           "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=500&q=80",
         category: "budgeting",
@@ -16,20 +24,101 @@ export async function seedMongoArticlesIfEmpty() {
       {
         title: "Understanding Credit Scores",
         description: "What is a credit score and why does it matter?",
-        content: "<p>Your credit score affects your ability to borrow...</p>",
+        content: `<h1>Understanding Credit Scores</h1>
+          <p>Your credit score is a number that represents your creditworthiness. It affects your ability to get loans, credit cards, and even jobs or apartments.</p>
+          <h2>What Affects Your Score</h2>
+          <ul>
+            <li>Payment history</li>
+            <li>Credit utilization</li>
+            <li>Length of credit history</li>
+            <li>Types of credit</li>
+            <li>New credit applications</li>
+          </ul>`,
         imageUrl:
-          "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=500&q=80",
+          "https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?auto=format&fit=crop&w=500&q=80",
         category: "credit",
       },
       {
         title: "Saving Strategies",
-        description: "Tips and tricks to help you save more.",
-        content: "<p>Saving money is key to reaching your goals...</p>",
+        description:
+          "Practical tips for building savings, even when money is tight.",
+        content: `<h1>Saving Strategies</h1>
+          <p>Saving money is an important part of financial health. Even small amounts add up over time.</p>
+          <h2>Effective Saving Strategies</h2>
+          <ol>
+            <li>Start small - even $5 a week helps</li>
+            <li>Automate your savings</li>
+            <li>Save windfalls (tax refunds, bonuses)</li>
+            <li>Track your progress</li>
+          </ol>`,
         imageUrl:
-          "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=500&q=80",
+          "https://images.unsplash.com/photo-1434626881859-194d67b2b86f?auto=format&fit=crop&w=500&q=80",
         category: "saving",
       },
-      // Add more articles as needed
+      {
+        title: "Debt Management",
+        description: "Learn how to control and pay off your debts responsibly.",
+        content: `<h1>Debt Management</h1>
+          <p>Managing debt is crucial for financial health. A good debt management strategy helps you stay in control and work toward becoming debt-free.</p>
+          <h2>Debt Management Tips</h2>
+          <ul>
+            <li>List all your debts</li>
+            <li>Make a payoff plan</li>
+            <li>Consider consolidation</li>
+            <li>Avoid new debt</li>
+          </ul>`,
+        imageUrl:
+          "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=500&q=80",
+        category: "debt",
+      },
+      {
+        title: "Banking Basics",
+        description: "Understanding banking and financial institutions.",
+        content: `<h1>Banking Basics</h1>
+          <p>Banks provide essential financial services that help you manage and protect your money.</p>
+          <h2>Common Bank Accounts</h2>
+          <ul>
+            <li>Checking accounts</li>
+            <li>Savings accounts</li>
+            <li>Certificates of deposit (CDs)</li>
+            <li>Money market accounts</li>
+          </ul>`,
+        imageUrl:
+          "https://images.unsplash.com/photo-1518183214770-9cffbec72538?auto=format&fit=crop&w=500&q=80",
+        category: "banking",
+      },
+      {
+        title: "Career Development",
+        description: "Build your career and increase your earning potential.",
+        content: `<h1>Career Development</h1>
+          <p>Your career is one of your most valuable financial assets. Investing in your skills and professional growth can lead to higher income.</p>
+          <h2>Career Growth Tips</h2>
+          <ul>
+            <li>Set clear goals</li>
+            <li>Build relevant skills</li>
+            <li>Network effectively</li>
+            <li>Seek mentorship</li>
+          </ul>`,
+        imageUrl:
+          "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=500&q=80",
+        category: "career",
+      },
+      {
+        title: "Understanding Taxes",
+        description: "Navigate the tax system and maximize your returns.",
+        content: `<h1>Understanding Taxes</h1>
+          <p>Understanding taxes helps you plan better and potentially save money through deductions and credits.</p>
+          <h2>Key Tax Concepts</h2>
+          <ul>
+            <li>Income tax brackets</li>
+            <li>Tax deductions</li>
+            <li>Tax credits</li>
+            <li>Filing status</li>
+          </ul>`,
+        imageUrl:
+          "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=500&q=80",
+        category: "taxes",
+      },
     ];
     await db.collection("articles").insertMany(initialArticles);
     console.log("Seeded MongoDB with initial articles.");
